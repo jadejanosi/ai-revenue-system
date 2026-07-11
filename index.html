@@ -8,13 +8,14 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;700;800;900&family=Nunito+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
   --t900:#0F172A;--t800:#123C3D;--t700:#0A696B;--t600:#128577;--t500:#1D9E75;
   --t300:#4FC9BE;--t200:#9FE1CB;--t100:#CCF2F3;--t50:#E3F8F9;
   --ink:#0D1F1A;--ink2:#2A3D35;--muted:#5A7268;
-  --border:rgba(15,110,86,0.18);--borderb:rgba(15,110,86,0.35);
+  --border:rgba(10,105,107,0.18);--borderb:rgba(10,105,107,0.35);
   --bg:#F7FBFA;--bgc:#FFFFFF;
   --fd:'Be Vietnam Pro',Arial,sans-serif;--fb:'Nunito Sans',system-ui,sans-serif;
 }
@@ -26,8 +27,8 @@ body{background:var(--bg);color:var(--ink);font-family:var(--fb);line-height:1.7
 .hdr-back{font-size:0.72rem;font-weight:600;color:var(--t200);text-decoration:none;letter-spacing:0.06em;text-transform:uppercase;opacity:0.8;transition:opacity 0.2s}
 .hdr-back:hover{opacity:1}
 .hero{background:linear-gradient(135deg,var(--t900) 0%,var(--t800) 50%,var(--t700) 100%);padding:52px 28px 44px;text-align:center;position:relative;overflow:hidden}
-.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 20% 60%,rgba(29,158,117,0.2) 0%,transparent 55%),radial-gradient(ellipse at 80% 20%,rgba(93,202,165,0.12) 0%,transparent 50%);pointer-events:none}
-.hero-badge{display:inline-block;font-size:0.68rem;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:var(--t200);background:rgba(29,158,117,0.18);border:1px solid rgba(93,202,165,0.3);padding:4px 14px;border-radius:20px;margin-bottom:16px;position:relative;z-index:1}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 20% 60%,rgba(29,158,117,0.2) 0%,transparent 55%),radial-gradient(ellipse at 80% 20%,rgba(79,201,190,0.12) 0%,transparent 50%);pointer-events:none}
+.hero-badge{display:inline-block;font-size:0.68rem;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:var(--t200);background:rgba(29,158,117,0.18);border:1px solid rgba(79,201,190,0.3);padding:4px 14px;border-radius:20px;margin-bottom:16px;position:relative;z-index:1}
 .hero h1{font-family:var(--fd);font-size:clamp(2rem,5vw,3.2rem);font-weight:700;color:#fff;line-height:1.15;max-width:680px;margin:0 auto 12px;position:relative;z-index:1}
 .hero h1 em{color:var(--t200);font-style:italic}
 .hero p{font-size:0.95rem;color:rgba(255,255,255,0.72);max-width:500px;margin:0 auto;position:relative;z-index:1}
@@ -724,6 +725,10 @@ For each post: hook, core message, CTA. Keep it human.</div>
     <div class="ai-out" id="out-weekly" style="margin-top:16px;">
       <h4>✦ Your Week of Content</h4>
       <div class="ai-content" id="out-weekly-content"></div>
+      <div id="weekly-downloads" style="display:none;margin-top:14px;gap:8px;flex-wrap:wrap;">
+        <button class="btn-copy" onclick="downloadCSV(weeklyData,'mars-weekly-content')">⬇ Download CSV</button>
+        <button class="btn-copy" onclick="downloadXLSX(weeklyData,'mars-weekly-content','Week')">⬇ Download XLSX</button>
+      </div>
     </div>
     <div class="slabel" style="margin-top:28px;">Voice restoration prompt — make any AI draft sound like you</div>
     <div class="igrid">
@@ -810,14 +815,13 @@ Posting cadence: [CAL_CADENCE]
 Product I'm promoting: [PRODUCT]
 Anything happening this month worth tying content to: [CAL_CONTEXT]
 
-Create a 30-day content calendar across only the platforms listed above. For each post:
-· Day + platform + format (Reel / carousel / static / Story / pin / email / tweet)
-· Content angle (specific — not 'motivational post')
-· Hook (written out in full)
-· Whether it's educational, trust-building, or conversion content
-· CTA
+Create a 30-day content calendar across only the platforms listed above.
+Balance: roughly 60% educational/trust, 40% conversion. Every piece should serve the goal above.
 
-Balance: roughly 60% educational/trust, 40% conversion. Every piece should serve the goal above. Group the output by week (Week 1-4) so it's easy to scan.</div>
+Return ONLY a valid JSON array, no markdown fences, no preamble, no explanation before or after. Each item in the array is one post, in this exact shape:
+{"week": 1, "day": "Day 1", "platform": "Instagram", "format": "Carousel", "angle": "specific content angle, not generic", "hook": "the full hook written out", "type": "educational, trust, or conversion", "cta": "the call to action"}
+
+Include one object per planned post across the full 30 days. Order the array by day.</div>
       <div class="pactions">
         <button class="btn-copy" onclick="copyCalendarPrompt(this)">Copy filled prompt</button>
       </div>
@@ -826,6 +830,10 @@ Balance: roughly 60% educational/trust, 40% conversion. Every piece should serve
     <div class="ai-out" id="out-calendar" style="margin-top:16px;">
       <h4>✦ Your 30-Day Calendar</h4>
       <div class="ai-content" id="out-calendar-content"></div>
+      <div id="calendar-downloads" style="display:none;margin-top:14px;gap:8px;flex-wrap:wrap;">
+        <button class="btn-copy" onclick="downloadCSV(calendarData,'mars-30-day-calendar')">⬇ Download CSV</button>
+        <button class="btn-copy" onclick="downloadXLSX(calendarData,'mars-30-day-calendar','Calendar')">⬇ Download XLSX</button>
+      </div>
     </div>
   </div>
 
@@ -849,6 +857,8 @@ Balance: roughly 60% educational/trust, 40% conversion. Every piece should serve
 <div class="toast" id="toast">Copied!</div>
 <script>
 let voiceOS = '';
+let calendarData = null;
+let weeklyData = null;
 function getVals() {
   return {
     BUSINESS: (document.getElementById('v-biz')||{}).value||'',
@@ -1017,8 +1027,10 @@ async function generateWeeklyPlan() {
   const btn = document.getElementById('weekly-btn');
   const outEl = document.getElementById('out-weekly');
   const contentEl = document.getElementById('out-weekly-content');
+  const dlEl = document.getElementById('weekly-downloads');
   btn.disabled = true; btn.textContent = 'Generating your week...';
   outEl.style.display = 'block';
+  dlEl.style.display = 'none';
   contentEl.innerHTML = '<div class="ai-loading"><div class="spinner"></div> Planning your full week of content...</div>';
   const prompt = `It's Monday. Help me plan this week's content. I have about 30 minutes.
 Brand Context: ${v.VOICE_OS}
@@ -1029,23 +1041,24 @@ Trending topics in my niche I've noticed: ${v.TRENDS}
 My product: ${v.PRODUCT}
 My niche: ${v.NICHE}
 
-Give me a Mon-Fri content plan. For each day:
-· Platform + format
-· Specific angle (not generic — 'mindset tips' is not a plan)
-· Scroll-stopping hook written out in full
-· Core message in one sentence
-· CTA
-
+Give me a Mon-Fri content plan.
 Monday = reach (educational or entertaining — make it shareable)
 Tuesday = value (teach something specific and useful)
 Wednesday = trust (personal story or behind-the-scenes)
 Thursday = engagement (question, poll, or relatable moment)
 Friday = conversion (promote the product or get them to the link)
 
-For each post write the actual hook and a 2-3 sentence caption draft. Make it sound like me.`;
+Return ONLY a valid JSON array, no markdown fences, no preamble, no explanation. One object per day, in this exact shape:
+{"day": "Monday", "platform": "Instagram", "format": "Reel", "angle": "specific content angle", "hook": "the full hook written out", "message": "core message in one sentence", "cta": "the call to action"}`;
   try {
     const text = await callAI(prompt);
-    contentEl.textContent = text;
+    weeklyData = parseAIJson(text);
+    if (weeklyData) {
+      contentEl.innerHTML = renderDataTable(weeklyData);
+      dlEl.style.display = 'flex';
+    } else {
+      contentEl.textContent = text;
+    }
   } catch(e) {
     contentEl.textContent = 'Could not connect. Please try again.';
   }
@@ -1131,18 +1144,102 @@ async function generateCalendar() {
   const btn = document.getElementById('calendar-btn');
   const outEl = document.getElementById('out-calendar');
   const contentEl = document.getElementById('out-calendar-content');
+  const dlEl = document.getElementById('calendar-downloads');
   btn.disabled = true; btn.textContent = 'Building your 30-day calendar...';
   outEl.style.display = 'block';
+  dlEl.style.display = 'none';
   contentEl.innerHTML = '<div class="ai-loading"><div class="spinner"></div> Planning 30 days across ' + calPlatforms.join(', ') + '...</div>';
 
   const prompt = buildCalendarPrompt();
   try {
     const text = await callAI(prompt);
-    contentEl.textContent = text;
+    calendarData = parseAIJson(text);
+    if (calendarData) {
+      contentEl.innerHTML = renderDataTable(calendarData);
+      dlEl.style.display = 'flex';
+    } else {
+      contentEl.textContent = text;
+    }
   } catch(e) {
     contentEl.textContent = 'Could not connect. Please try again.';
   }
   btn.disabled = false; btn.textContent = '✦ Generate my 30-day calendar';
+}
+
+// ── Shared helpers for structured (table + download) AI outputs ──
+
+function parseAIJson(text) {
+  try {
+    const cleaned = text.replace(/```json|```/g, '').trim();
+    const match = cleaned.match(/\[[\s\S]*\]/);
+    const parsed = JSON.parse(match ? match[0] : cleaned);
+    if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+    return null;
+  } catch (e) {
+    return null;
+  }
+}
+
+function renderDataTable(data) {
+  if (!data || !data.length) return '<p>No data returned.</p>';
+  const cols = Object.keys(data[0]);
+  let html = '<div style="overflow-x:auto;"><table style="width:100%;border-collapse:collapse;font-size:0.82rem;">';
+  html += '<thead><tr>';
+  cols.forEach(c => {
+    html += `<th style="text-align:left;padding:8px 10px;background:var(--t50);color:var(--t800);font-family:'Be Vietnam Pro',sans-serif;font-weight:700;font-size:0.68rem;text-transform:uppercase;letter-spacing:0.05em;border-bottom:2px solid var(--t200);">${escapeHtml(c)}</th>`;
+  });
+  html += '</tr></thead><tbody>';
+  data.forEach((row, i) => {
+    html += `<tr style="background:${i % 2 === 0 ? 'transparent' : 'rgba(255,255,255,0.5)'};">`;
+    cols.forEach(c => {
+      html += `<td style="padding:8px 10px;border-bottom:1px solid var(--border);vertical-align:top;color:var(--ink2);">${escapeHtml(String(row[c] ?? ''))}</td>`;
+    });
+    html += '</tr>';
+  });
+  html += '</tbody></table></div>';
+  return html;
+}
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+function downloadCSV(data, filename) {
+  if (!data || !data.length) { showToast('Nothing to download yet'); return; }
+  const cols = Object.keys(data[0]);
+  const escapeCsv = (val) => {
+    const s = String(val ?? '');
+    if (s.includes(',') || s.includes('"') || s.includes('\n')) {
+      return '"' + s.replace(/"/g, '""') + '"';
+    }
+    return s;
+  };
+  let csv = cols.map(escapeCsv).join(',') + '\n';
+  data.forEach(row => {
+    csv += cols.map(c => escapeCsv(row[c])).join(',') + '\n';
+  });
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename + '.csv';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast('CSV downloaded!');
+}
+
+function downloadXLSX(data, filename, sheetName) {
+  if (!data || !data.length) { showToast('Nothing to download yet'); return; }
+  if (typeof XLSX === 'undefined') { showToast('Download library failed to load'); return; }
+  const ws = XLSX.utils.json_to_sheet(data);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, sheetName || 'Sheet1');
+  XLSX.writeFile(wb, filename + '.xlsx');
+  showToast('XLSX downloaded!');
 }
 
 </script>
