@@ -1,24 +1,1150 @@
-export default async function handler(req, res) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) {
-    return res.status(500).json({ error: 'API key not configured' });
-  }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mom's AI Revenue System | Jade Janosi</title>
+<meta name="description" content="The 8-module AI operating system for moms selling digital products. Run it in 47 minutes a week.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;700;800;900&family=Nunito+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --t900:#0F172A;--t800:#123C3D;--t700:#0A696B;--t600:#158C68;--t500:#1D9E75;
+  --t300:#5DCAA5;--t200:#9FE1CB;--t100:#CCF2F3;--t50:#E3F8F9;
+  --ink:#0D1F1A;--ink2:#2A3D35;--muted:#5A7268;
+  --border:rgba(15,110,86,0.18);--borderb:rgba(15,110,86,0.35);
+  --bg:#F7FBFA;--bgc:#FFFFFF;
+  --fd:'Be Vietnam Pro',Arial,sans-serif;--fb:'Nunito Sans',system-ui,sans-serif;
+}
+html{font-size:16px;scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);font-family:var(--fb);line-height:1.7;min-height:100vh}
+.hdr{background:var(--t900);padding:16px 28px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:200;box-shadow:0 2px 20px rgba(0,0,0,0.25)}
+.hdr-brand{font-family:var(--fd);font-size:1.2rem;font-weight:700;color:#fff}
+.hdr-brand span{color:var(--t200)}
+.hdr-back{font-size:0.72rem;font-weight:600;color:var(--t200);text-decoration:none;letter-spacing:0.06em;text-transform:uppercase;opacity:0.8;transition:opacity 0.2s}
+.hdr-back:hover{opacity:1}
+.hero{background:linear-gradient(135deg,var(--t900) 0%,var(--t800) 50%,#0D3D30 100%);padding:52px 28px 44px;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 20% 60%,rgba(29,158,117,0.2) 0%,transparent 55%),radial-gradient(ellipse at 80% 20%,rgba(93,202,165,0.12) 0%,transparent 50%);pointer-events:none}
+.hero-badge{display:inline-block;font-size:0.68rem;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:var(--t200);background:rgba(29,158,117,0.18);border:1px solid rgba(93,202,165,0.3);padding:4px 14px;border-radius:20px;margin-bottom:16px;position:relative;z-index:1}
+.hero h1{font-family:var(--fd);font-size:clamp(2rem,5vw,3.2rem);font-weight:700;color:#fff;line-height:1.15;max-width:680px;margin:0 auto 12px;position:relative;z-index:1}
+.hero h1 em{color:var(--t200);font-style:italic}
+.hero p{font-size:0.95rem;color:rgba(255,255,255,0.72);max-width:500px;margin:0 auto;position:relative;z-index:1}
+.hero-stats{display:flex;justify-content:center;gap:32px;margin-top:28px;position:relative;z-index:1;flex-wrap:wrap}
+.hero-stat .num{font-family:var(--fd);font-size:1.8rem;font-weight:700;color:var(--t200);display:block;line-height:1}
+.hero-stat .lbl{font-size:0.72rem;color:rgba(255,255,255,0.6);text-transform:uppercase;letter-spacing:0.08em}
+.setup-banner{background:var(--t50);border-bottom:1px solid var(--t200);padding:12px 28px;text-align:center;font-size:0.82rem;color:var(--t800)}
+.setup-banner strong{font-weight:700}
+.setup-banner a{color:var(--t700);font-weight:600;text-decoration:underline;cursor:pointer}
+.mod-nav{background:var(--bgc);border-bottom:1px solid var(--border);padding:0 20px;display:flex;align-items:center;overflow-x:auto;scrollbar-width:none;position:sticky;top:53px;z-index:190}
+.mod-nav::-webkit-scrollbar{display:none}
+.mod-tab{display:flex;align-items:center;gap:6px;padding:12px 14px;font-size:0.74rem;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:2.5px solid transparent;white-space:nowrap;transition:all 0.2s;flex-shrink:0;background:none;border-top:none;border-left:none;border-right:none;text-transform:uppercase;letter-spacing:0.05em}
+.mod-tab:hover{color:var(--t600)}
+.mod-tab.active{color:var(--t700);border-bottom-color:var(--t500)}
+.mod-tab.done{color:var(--t600)}
+.tab-num{width:18px;height:18px;border-radius:50%;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:0.62rem;font-weight:700;color:var(--muted);flex-shrink:0;transition:all 0.2s}
+.mod-tab.active .tab-num{background:var(--t500);color:#fff}
+.mod-tab.done .tab-num{background:var(--t700);color:#fff}
+.main{max-width:880px;margin:0 auto;padding:36px 20px 80px}
+.mod-panel{display:none;animation:fadeIn 0.22s ease}
+.mod-panel.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+.card{background:var(--bgc);border:1px solid var(--border);border-radius:8px;padding:28px;margin-bottom:18px}
+.card-hdr{display:flex;align-items:flex-start;gap:14px;margin-bottom:22px;padding-bottom:18px;border-bottom:1px solid var(--border)}
+.mod-badge{width:42px;height:42px;border-radius:8px;background:var(--t50);border:1px solid var(--t200);display:flex;align-items:center;justify-content:center;font-family:var(--fd);font-size:1rem;font-weight:700;color:var(--t700);flex-shrink:0}
+.card-hdr h2{font-family:var(--fd);font-size:1.6rem;font-weight:700;color:var(--ink);line-height:1.2;margin-bottom:3px}
+.card-hdr p{font-size:0.85rem;color:var(--muted);margin:0}
+.slabel{font-size:0.68rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--t600);margin:22px 0 10px}
+.igrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:4px}
+@media(max-width:580px){.igrid{grid-template-columns:1fr}}
+.fw{grid-column:1/-1}
+.igrp{display:flex;flex-direction:column;gap:5px}
+.igrp label{font-size:0.78rem;font-weight:600;color:var(--ink2)}
+.igrp input,.igrp select,.igrp textarea{font-family:var(--fb);font-size:0.88rem;color:var(--ink);background:var(--bg);border:1px solid var(--borderb);border-radius:6px;padding:9px 12px;transition:border-color 0.2s,box-shadow 0.2s;outline:none;width:100%}
+.igrp input:focus,.igrp select:focus,.igrp textarea:focus{border-color:var(--t500);box-shadow:0 0 0 3px rgba(29,158,117,0.12)}
+.igrp input::placeholder,.igrp textarea::placeholder{color:var(--muted);opacity:0.7}
+.igrp textarea{resize:vertical;min-height:80px}
+.voice-os-box{background:var(--t50);border:1px solid var(--t200);border-radius:8px;padding:20px;margin-top:16px;display:none}
+.voice-os-box h4{font-family:var(--fd);font-size:1rem;font-weight:700;color:var(--t800);margin-bottom:10px}
+.voice-os-content{font-size:0.85rem;color:var(--ink2);line-height:1.7;white-space:pre-wrap}
+.btn-gen{width:100%;padding:13px 20px;background:var(--t700);color:#fff;font-family:var(--fb);font-size:0.9rem;font-weight:700;border:none;border-radius:6px;cursor:pointer;margin-top:16px;transition:background 0.2s,transform 0.15s;display:flex;align-items:center;justify-content:center;gap:7px}
+.btn-gen:hover{background:var(--t600);transform:translateY(-1px)}
+.btn-gen:disabled{opacity:0.6;cursor:not-allowed;transform:none}
+.btn-copy{font-family:var(--fb);font-size:0.76rem;font-weight:700;padding:7px 14px;background:var(--t700);color:#fff;border:none;border-radius:5px;cursor:pointer;transition:background 0.15s}
+.btn-copy:hover{background:var(--t600)}
+.btn-sec{font-family:var(--fb);font-size:0.76rem;font-weight:600;padding:7px 14px;background:var(--bgc);color:var(--ink2);border:1px solid var(--borderb);border-radius:5px;cursor:pointer;transition:all 0.15s}
+.btn-sec:hover{background:var(--t50)}
+.ai-out{background:var(--t50);border:1px solid var(--t200);border-radius:8px;padding:20px;margin-top:16px;display:none}
+.ai-out h4{font-family:var(--fd);font-size:1rem;font-weight:700;color:var(--t800);margin-bottom:10px}
+.ai-content{font-size:0.87rem;color:var(--ink2);line-height:1.75;white-space:pre-wrap}
+.ai-loading{display:flex;align-items:center;gap:10px;font-size:0.85rem;color:var(--t700)}
+.spinner{width:16px;height:16px;border:2px solid var(--t200);border-top-color:var(--t600);border-radius:50%;animation:spin 0.75s linear infinite;flex-shrink:0}
+@keyframes spin{to{transform:rotate(360deg)}}
+.prompt-block{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:18px;margin-bottom:12px}
+.prompt-block:hover{border-color:var(--borderb)}
+.plabel{font-size:0.68rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--t700);margin-bottom:8px}
+.ptext{font-size:0.84rem;color:var(--ink2);line-height:1.7;margin-bottom:12px;white-space:pre-wrap}
+.pactions{display:flex;gap:7px;flex-wrap:wrap}
+.checklist{list-style:none;padding:0;margin:0}
+.checklist li{display:flex;align-items:flex-start;gap:9px;padding:8px 0;border-bottom:1px solid var(--border);font-size:0.86rem;color:var(--ink2);cursor:pointer;user-select:none}
+.checklist li:last-child{border-bottom:none}
+.checklist li.checked{color:var(--muted);text-decoration:line-through;opacity:0.6}
+.cbox{width:17px;height:17px;border:1.5px solid var(--borderb);border-radius:4px;flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;transition:all 0.15s;background:var(--bgc)}
+.checked .cbox{background:var(--t600);border-color:var(--t600)}
+.ck{width:9px;height:9px;fill:none;stroke:white;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round;opacity:0;transition:opacity 0.15s}
+.checked .ck{opacity:1}
+.info-box{background:var(--t50);border-left:3px solid var(--t500);border-radius:0 6px 6px 0;padding:12px 16px;margin-bottom:4px;font-size:0.86rem;color:var(--ink2);line-height:1.6}
+.info-box strong{color:var(--t800);font-weight:600}
+.wgen-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+@media(max-width:580px){.wgen-grid{grid-template-columns:1fr}}
+.day-card{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:14px}
+.day-label{font-size:0.68rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--t700);margin-bottom:6px}
+.day-content{font-size:0.82rem;color:var(--ink2);line-height:1.6}
+.formula-row{display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:4px}
+.fbox{background:var(--t50);border:1px solid var(--t200);border-radius:6px;padding:9px 12px;text-align:center;min-width:80px}
+.fbox .fm{font-family:var(--fd);font-size:0.95rem;font-weight:700;color:var(--t800);display:block;line-height:1.2}
+.fbox .fs{font-size:0.7rem;color:var(--t600);display:block}
+.fbox.res{background:var(--t700);border-color:var(--t700)}
+.fbox.res .fm{color:#fff}
+.fbox.res .fs{color:var(--t200)}
+.farr{font-size:1rem;color:var(--t300);flex-shrink:0}
+.journey{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:4px}
+@media(max-width:580px){.journey{grid-template-columns:repeat(2,1fr)}}
+.jstep{background:var(--t50);border:1px solid var(--t200);border-radius:8px;padding:14px;text-align:center}
+.jnum{font-family:var(--fd);font-size:1.4rem;font-weight:700;color:var(--t700);display:block;margin-bottom:4px}
+.jtitle{font-size:0.78rem;font-weight:700;color:var(--t800);display:block;margin-bottom:4px}
+.jsub{font-size:0.72rem;color:var(--t600);line-height:1.5}
+.stack-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:4px}
+@media(max-width:580px){.stack-grid{grid-template-columns:1fr}}
+.stack-item{background:var(--t50);border:1px solid var(--t200);border-radius:8px;padding:14px}
+.stack-num{font-family:var(--fd);font-size:0.9rem;font-weight:700;color:var(--t500);margin-bottom:4px}
+.stack-title{font-size:0.85rem;font-weight:700;color:var(--t800);margin-bottom:3px}
+.stack-sub{font-size:0.77rem;color:var(--t600);line-height:1.5}
+.week-sched{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:4px}
+@media(max-width:580px){.week-sched{grid-template-columns:1fr 1fr}}
+.wday{background:var(--t50);border:1px solid var(--t200);border-radius:8px;padding:12px}
+.wday-name{font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--t700);margin-bottom:4px}
+.wday-time{font-family:var(--fd);font-size:1.1rem;font-weight:700;color:var(--t800);margin-bottom:4px}
+.wday-desc{font-size:0.75rem;color:var(--ink2);line-height:1.5}
+.mod-footer{display:flex;justify-content:space-between;align-items:center;margin-top:24px;padding-top:18px;border-top:1px solid var(--border);gap:10px}
+.btn-prev{font-family:var(--fb);font-size:0.82rem;font-weight:600;padding:9px 18px;border-radius:6px;cursor:pointer;transition:all 0.15s;background:var(--bgc);color:var(--ink2);border:1px solid var(--borderb)}
+.btn-prev:hover{background:var(--t50)}
+.btn-next{font-family:var(--fb);font-size:0.82rem;font-weight:600;padding:9px 18px;border-radius:6px;cursor:pointer;transition:all 0.15s;background:var(--t700);color:#fff;border:none;margin-left:auto}
+.btn-next:hover{background:var(--t600)}
+.prog-track{flex:1;height:4px;background:var(--border);border-radius:2px;overflow:hidden}
+.prog-fill{height:100%;background:var(--t500);border-radius:2px;transition:width 0.4s ease}
+.done-banner{background:linear-gradient(135deg,var(--t800),var(--t700));border-radius:8px;padding:32px;text-align:center;margin-top:18px;color:#fff}
+.done-banner h3{font-family:var(--fd);font-size:1.7rem;font-weight:700;color:#fff;margin-bottom:8px}
+.done-banner p{color:rgba(255,255,255,0.8);font-size:0.9rem;margin-bottom:18px}
+.btn-done{display:inline-block;background:var(--t200);color:var(--t900);font-family:var(--fb);font-weight:700;font-size:0.82rem;padding:11px 26px;border-radius:6px;text-decoration:none;transition:background 0.2s}
+.btn-done:hover{background:var(--t100)}
+.site-footer{text-align:center;padding:20px;font-size:0.76rem;color:var(--muted);border-top:1px solid var(--border)}
+.site-footer a{color:var(--t600);text-decoration:none}
+.toast{position:fixed;bottom:20px;right:20px;background:var(--t800);color:#fff;font-size:0.8rem;font-weight:600;padding:9px 16px;border-radius:6px;z-index:9999;opacity:0;transform:translateY(8px);transition:all 0.25s;pointer-events:none}
+.toast.show{opacity:1;transform:translateY(0)}
+.voice-set{display:inline-flex;align-items:center;gap:5px;background:var(--t50);border:1px solid var(--t200);border-radius:20px;padding:3px 10px;font-size:0.72rem;color:var(--t700);font-weight:600;margin-left:8px}
+.voice-dot{width:6px;height:6px;border-radius:50%;background:var(--t500)}
+@media(max-width:640px){
+  .hdr{padding:14px 16px}
+  .hero{padding:36px 16px 32px}
+  .hero-stats{gap:20px}
+  .mod-nav{padding:0 10px}
+  .mod-tab{padding:10px 10px;font-size:0.68rem}
+  .main{padding:24px 14px 60px}
+  .card{padding:18px 14px}
+}
+</style>
+</head>
+<body>
+<header class="hdr">
+  <div class="hdr-brand">Mom's AI <span>Revenue System</span></div>
+  <a href="https://jadejanosi.com" class="hdr-back">← jadejanosi.com</a>
+</header>
+<div class="hero">
+  <div class="hero-badge">8-Module AI Operating System</div>
+  <h1>Your digital product business — <em>running on autopilot.</em></h1>
+  <p>Install it once. Run it in 47 minutes a week. Built for moms running a business in the margins of their day.</p>
+  <div class="hero-stats">
+    <div class="hero-stat"><span class="num">8</span><span class="lbl">Operating Modules</span></div>
+    <div class="hero-stat"><span class="num">20+</span><span class="lbl">Copy-Paste Prompts</span></div>
+    <div class="hero-stat"><span class="num">47</span><span class="lbl">Min/Week To Run It</span></div>
+    <div class="hero-stat"><span class="num">$0</span><span class="lbl">Extra Childcare Needed</span></div>
+  </div>
+</div>
+<div class="setup-banner" id="setup-banner">
+  <strong>Start with Setup.</strong> Your Brand Voice OS fills every prompt across all 8 modules automatically. <a onclick="goToMod(0)">Set it up now →</a>
+</div>
+<nav class="mod-nav" aria-label="Module navigation">
+  <button class="mod-tab active" id="tab-0" onclick="goToMod(0)"><span class="tab-num">S</span>Setup</button>
+  <button class="mod-tab" id="tab-1" onclick="goToMod(1)"><span class="tab-num">1</span>Foundation</button>
+  <button class="mod-tab" id="tab-2" onclick="goToMod(2)"><span class="tab-num">2</span>Content</button>
+  <button class="mod-tab" id="tab-3" onclick="goToMod(3)"><span class="tab-num">3</span>Platforms</button>
+  <button class="mod-tab" id="tab-4" onclick="goToMod(4)"><span class="tab-num">4</span>Engagement</button>
+  <button class="mod-tab" id="tab-5" onclick="goToMod(5)"><span class="tab-num">5</span>Analytics</button>
+  <button class="mod-tab" id="tab-6" onclick="goToMod(6)"><span class="tab-num">6</span>Monetize</button>
+  <button class="mod-tab" id="tab-7" onclick="goToMod(7)"><span class="tab-num">7</span>Weekly Gen</button>
+  <button class="mod-tab" id="tab-8" onclick="goToMod(8)"><span class="tab-num">8</span>Calendar</button>
+</nav>
+<main class="main">
+<div class="mod-panel active" id="panel-0">
+  <div class="card">
+    <div class="card-hdr">
+      <div class="mod-badge">⚙</div>
+      <div>
+        <h2>Brand Voice OS</h2>
+        <p>Fill this in once. It powers every prompt across all 8 modules so nothing sounds generic.</p>
+      </div>
+    </div>
+    <div class="info-box"><strong>This is the most important step.</strong> The #1 mistake moms make with AI: asking it to write content without telling it who you are. Generic prompt = generic content. This fixes that permanently.</div>
+    <div class="slabel">Your business details</div>
+    <div class="igrid">
+      <div class="igrp fw"><label>What do you sell and who do you help? (2 sentences)</label><textarea id="v-biz" placeholder="e.g. I sell digital products and AI tools for moms who want to build online income. I help moms go from overwhelmed and underpaid to running a business in the margins of their day."></textarea></div>
+      <div class="igrp fw"><label>Your audience — who are they specifically?</label><input id="v-audience" type="text" placeholder="e.g. moms of toddlers building a first online income, tired of trading time for money"/></div>
+      <div class="igrp"><label>Your personality / how you actually talk</label><input id="v-personality" type="text" placeholder="e.g. funny, direct, warm, slightly unhinged, real"/></div>
+      <div class="igrp"><label>Creators/brands whose tone you love (2-3)</label><input id="v-inspo" type="text" placeholder="e.g. Alex Hormozi, Jenna Kutcher, that chaotic mom meme account"/></div>
+      <div class="igrp"><label>Words that feel like you (5-8 adjectives)</label><input id="v-words" type="text" placeholder="e.g. real, scrappy, practical, unfiltered, warm"/></div>
+      <div class="igrp"><label>Words / phrases that make you cringe</label><input id="v-cringe" type="text" placeholder="e.g. 'girlie', 'hustle', 'manifest', 'queen'"/></div>
+      <div class="igrp fw"><label>Your main product / offer</label><input id="v-product" type="text" placeholder="e.g. Mom's AI Revenue System — $47 digital product"/></div>
+      <div class="igrp fw"><label>Your niche</label><input id="v-niche" type="text" placeholder="e.g. digital products for moms, AI tools for online business"/></div>
+    </div>
+    <button class="btn-gen" id="voice-btn" onclick="generateVoiceOS()">✦ Generate my Brand Voice OS</button>
+    <div class="voice-os-box" id="voice-os-box">
+      <h4>✦ Your Brand Voice OS — save this</h4>
+      <div class="voice-os-content" id="voice-os-content"></div>
+      <div style="margin-top:14px;display:flex;gap:8px">
+        <button class="btn-copy" onclick="copyVoiceOS()">Copy Brand Voice OS</button>
+        <button class="btn-sec" onclick="saveVoiceOS()">Save to session</button>
+      </div>
+    </div>
+  </div>
+  <div class="mod-footer">
+    <div></div>
+    <div class="prog-track"><div class="prog-fill" style="width:0%"></div></div>
+    <button class="btn-next" onclick="goToMod(1)">Module 1: Foundation →</button>
+  </div>
+</div>
+<div class="mod-panel" id="panel-1">
+  <div class="card">
+    <div class="card-hdr">
+      <div class="mod-badge">01</div>
+      <div>
+        <h2>Foundation Module<span id="voice-indicator-1"></span></h2>
+        <p>Your voice, your people, your platform. Build this once — use it forever.</p>
+      </div>
+    </div>
+    <div class="info-box"><strong>Estimated setup time: one nap, one coffee, zero interruptions (hopefully).</strong> These aren't optional — they're the foundation every other module runs on.</div>
+    <div class="slabel">Buyer Persona Engine</div>
+    <div class="igrid">
+      <div class="igrp fw"><label>Your niche and what you sell</label><input id="m1-niche" type="text" placeholder="e.g. digital products for moms — AI tools and playbooks"/></div>
+    </div>
+    <div class="prompt-block">
+      <div class="plabel">Buyer Persona Engine — run once</div>
+      <div class="ptext" id="p-m1-persona">You are an audience research specialist for a digital product business.
+My niche: [NICHE] | My product: [PRODUCT]
+Brand Context: [VOICE_OS]
+
+Create 3 distinct buyer personas. Each is a real mom at a different stage.
+For each include:
+· Name, age, life stage (toddler mom? school-age kids? newborn chaos?)
+· Her biggest frustration right now (be specific — 'overwhelmed' isn't enough)
+· What she searches at 11pm when the kids are finally asleep
+· Words she uses to describe her problem (her language, not industry jargon)
+· What would make her stop scrolling mid-reel
+· What would make her buy without a second thought
+· Her #1 objection to buying digital products online
+Then: write one Instagram hook per persona that makes her feel seen.</div>
+      <div class="pactions">
+        <button class="btn-copy" onclick="copyPrompt('p-m1-persona',this)">Copy filled prompt</button>
+        <button class="btn-sec" onclick="runAndShow('p-m1-persona','out-m1-persona','out-m1-persona-content','Generating your buyer personas...')">Generate with AI</button>
+      </div>
+    </div>
+    <div class="ai-out" id="out-m1-persona"><h4>✦ Your Buyer Personas</h4><div class="ai-content" id="out-m1-persona-content"></div></div>
+    <div class="slabel">Platform Priority Map</div>
+    <div class="prompt-block">
+      <div class="plabel">Platform Strategy — where to focus</div>
+      <div class="ptext" id="p-m1-platform">You are a platform strategist for mom-owned digital product businesses.
+My business: [BUSINESS]
+My audience: [AUDIENCE]
+My personality: [PERSONALITY]
+Brand Context: [VOICE_OS]
+
+Tell me:
+1. Which 1-2 platforms I should prioritize and why (based on my audience and personality)
+2. What content type performs best for each recommended platform
+3. My posting cadence — realistic for a mom with 47 minutes a day
+4. What a 'winning week' looks like on each platform (specific, not vague)
+5. The one thing most moms in my niche are doing wrong on each platform
+
+Be direct. I don't need to be everywhere — I need to be somewhere that works.</div>
+      <div class="pactions">
+        <button class="btn-copy" onclick="copyPrompt('p-m1-platform',this)">Copy filled prompt</button>
+        <button class="btn-sec" onclick="runAndShow('p-m1-platform','out-m1-platform','out-m1-platform-content','Building your platform strategy...')">Generate with AI</button>
+      </div>
+    </div>
+    <div class="ai-out" id="out-m1-platform"><h4>✦ Your Platform Strategy</h4><div class="ai-content" id="out-m1-platform-content"></div></div>
+  </div>
+  <div class="mod-footer">
+    <button class="btn-prev" onclick="goToMod(0)">← Setup</button>
+    <div class="prog-track"><div class="prog-fill" style="width:13%"></div></div>
+    <button class="btn-next" onclick="goToMod(2)">Module 2: Content →</button>
+  </div>
+</div>
+<div class="mod-panel" id="panel-2">
+  <div class="card">
+    <div class="card-hdr">
+      <div class="mod-badge">02</div>
+      <div>
+        <h2>Content Engine</h2>
+        <p>One idea becomes a month of content. One 47-minute session = 30 days of posts.</p>
+      </div>
+    </div>
+    <div class="slabel">The 1→20 repurposing machine</div>
+    <div class="igrid">
+      <div class="igrp fw"><label>Your source content — one idea, story, tip, or lesson</label><textarea id="m2-source" placeholder="e.g. I posted my first digital product at 11pm with a screaming baby in the background and made $300 in 48 hours. Here's what I did..."></textarea></div>
+    </div>
+    <div class="prompt-block">
+      <div class="plabel">Full 1→20 repurpose prompt</div>
+      <div class="ptext" id="p-m2-repurpose">You are a social media content strategist for a mom-owned digital product business.
+Brand Context: [VOICE_OS]
+Source content: [SOURCE]
+
+Repurpose this into a full week of content:
+· 3x short-form video scripts (TikTok/Reels) — 30-60 seconds each
+· 2x Instagram carousels (slide-by-slide copy, 8-10 slides each)
+· 1x Twitter/X thread (8 tweets)
+· 5x Instagram Stories (poll / tip card / quiz / question sticker / CTA)
+· 2x promotional captions tying this topic to my product: [PRODUCT]
+
+Match each platform's style. Every hook must stop a tired mom mid-scroll.
+Keep the voice: [PERSONALITY]</div>
+      <div class="pactions">
+        <button class="btn-copy" onclick="copyPrompt('p-m2-repurpose',this)">Copy filled prompt</button>
+        <button class="btn-sec" onclick="runAndShow('p-m2-repurpose','out-m2-repurpose','out-m2-repurpose-content','Repurposing your content across all platforms...')">Generate with AI</button>
+      </div>
+    </div>
+    <div class="ai-out" id="out-m2-repurpose"><h4>✦ Your Full Content Week</h4><div class="ai-content" id="out-m2-repurpose-content"></div></div>
+    <div class="slabel">Hook generator</div>
+    <div class="igrid">
+      <div class="igrp"><label>Your audience's #1 pain</label><input id="m2-pain" type="text" placeholder="e.g. no time, no idea what to sell"/></div>
+      <div class="igrp"><label>Their #1 desire</label><input id="m2-desire" type="text" placeholder="e.g. making money without sacrificing more time"/></div>
+    </div>
+    <div class="prompt-block">
+      <div class="plabel">Hook generator — run monthly</div>
+      <div class="ptext" id="p-m2-hooks">You are a direct-response copywriter who specialises in content for moms online.
+My niche: [NICHE] | My audience's #1 pain: [PAIN] | Their #1 desire: [DESIRE]
+Brand Context: [VOICE_OS]
+
+Write 20 scroll-stopping hooks for short-form video using these structures:
+· Unhinged relatable: 'Me explaining [topic] to my husband at 11pm again'
+· Myth-bust: 'Stop [common advice]. Here's what I do instead with 2 kids screaming.'
+· Curiosity gap: 'The reason your [product] isn't selling has nothing to do with [X]'
+· Numbered: '3 things I wish someone told me before I launched my first digital product'
+· Real talk: 'Nobody tells you that [uncomfortable truth about niche]'
+· Before/after: 'I used to [struggle]. Now I [result]. The only thing that changed:'
+
+Output: one hook per line. No fluff. Make them feel like me.</div>
+      <div class="pactions">
+        <button class="btn-copy" onclick="copyPrompt('p-m2-hooks',this)">Copy filled prompt</button>
+        <button class="btn-sec" onclick="runAndShow('p-m2-hooks','out-m2-hooks','out-m2-hooks-content','Generating 20 scroll-stopping hooks...')">Generate with AI</button>
+      </div>
+    </div>
+    <div class="ai-out" id="out-m2-hooks"><h4>✦ Your 20 Hooks</h4><div class="ai-content" id="out-m2-hooks-content"></div></div>
+  </div>
+  <div class="mod-footer">
+    <button class="btn-prev" onclick="goToMod(1)">← Foundation</button>
+    <div class="prog-track"><div class="prog-fill" style="width:26%"></div></div>
+    <button class="btn-next" onclick="goToMod(3)">Module 3: Platforms →</button>
+  </div>
+</div>
+<div class="mod-panel" id="panel-3">
+  <div class="card">
+    <div class="card-hdr">
+      <div class="mod-badge">03</div>
+      <div>
+        <h2>Platform Playbooks</h2>
+        <p>TikTok. Instagram. Pinterest. Each one has different rules — here's how to win on all three.</p>
+      </div>
+    </div>
+    <div class="info-box"><strong>Pick 1-2 platforms to start. Master them. Then expand.</strong></div>
+    <div class="slabel">TikTok / Reels script builder</div>
+    <div class="igrid">
+      <div class="igrp"><label>Video topic</label><input id="m3-topic" type="text" placeholder="e.g. how I made $300 with my first digital product"/></div>
+      <div class="igrp"><label>Product tie-in</label><input id="m3-offer" type="text" placeholder="e.g. Mom's AI Revenue System"/></div>
+      <div class="igrp"><label>Video length</label>
+        <select id="m3-length"><option>30 seconds</option><option>60 seconds</option><option>90 seconds</option></select>
+      </div>
+    </div>
+    <div class="prompt-block">
+      <div class="plabel">TikTok / Reels script — HOOK → PROBLEM → TEASE → VALUE → REWATCH</div>
+      <div class="ptext" id="p-m3-tiktok">You are a TikTok scriptwriter who creates content for mom-owned businesses.
+Brand Context: [VOICE_OS]
+Topic: [TOPIC] | Product tie-in: [OFFER] | Length: [LENGTH]
+
+Write a video script using: HOOK → PROBLEM → TEASE → VALUE (3 points) → REWATCH CTA
+
+Requirements:
+· Hook must work as a standalone sentence someone would screenshot and send
+· Value points must be specific — no 'just be consistent' type advice
+· End with a reason to follow or save, not just 'like and subscribe'
+· Include on-screen text suggestions for each section
+· Write in spoken-word style — conversational, not essay-like
+· Include one 'overstimulated mom' relatable moment if it fits</div>
+      <div class="pactions">
+        <button class="btn-copy" onclick="copyPrompt('p-m3-tiktok',this)">Copy filled prompt</button>
+        <button class="btn-sec" onclick="runAndShow('p-m3-tiktok','out-m3-tiktok','out-m3-tiktok-content','Writing your Reels script...')">Generate with AI</button>
+      </div>
+    </div>
+    <div class="ai-out" id="out-m3-tiktok"><h4>✦ Your Reels Script</h4><div class="ai-content" id="out-m3-tiktok-content"></div></div>
+    <div class="slabel">Instagram carousel builder</div>
+    <div class="prompt-block">
+      <div class="plabel">10-slide carousel — built to convert</div>
+      <div class="ptext" id="p-m3-carousel">You are an Instagram strategist for a mom-owned digital product business.
+Brand Context: [VOICE_OS] | Topic: [TOPIC] | Product: [OFFER]
+
+Build a 10-slide carousel. For each slide:
+· Headline (max 7 words — must work as standalone text on screen)
+· Body copy (max 30 words — punchy, not padded)
+· Visual direction (what goes on the slide?)
+
+Structure:
+Slide 1 = HOOK (bold claim or question — forces the swipe)
+Slides 2-8 = VALUE (one point per slide, building on the last)
+Slide 9 = SUMMARY (quick recap — 'here's what we covered')
+Slide 10 = CTA (one action, make it specific and easy)
+
+Slide 1 must be so good they can't NOT swipe. Make slide 10 convert.</div>
+      <div class="pactions">
+        <button class="btn-copy" onclick="copyPrompt('p-m3-carousel',this)">Copy filled prompt</button>
+        <button class="btn-sec" onclick="runAndShow('p-m3-carousel','out-m3-carousel','out-m3-carousel-content','Building your carousel...')">Generate with AI</button>
+      </div>
+    </div>
+    <div class="ai-out" id="out-m3-carousel"><h4>✦ Your 10-Slide Carousel</h4><div class="ai-content" id="out-m3-carousel-content"></div></div>
+    <div class="slabel">Pinterest pin description writer</div>
+    <div class="igrid">
+      <div class="igrp"><label>Pin image topic</label><input id="m3-pin-image" type="text" placeholder="e.g. mom working on laptop at kitchen table"/></div>
+    </div>
+    <div class="prompt-block">
+      <div class="plabel">3 pin descriptions — SEO, story, and punchy versions</div>
+      <div class="ptext" id="p-m3-pinterest">You are a Pinterest SEO strategist for a mom-owned digital product business.
+Product: [PRODUCT] | Target audience: [AUDIENCE]
+Pin image topic: [PIN_IMAGE]
+Brand Context: [VOICE_OS]
+
+Write 3 Pinterest pin descriptions for the same image:
+Version A: SEO-focused (keyword-rich, search intent, 150-200 words)
+Version B: Story-driven (personal tone, speaks to her pain, 100-150 words)
+Version C: Direct/punchy (gets to the point fast, 80-100 words)
+
+For each: include a keyword-rich title (max 100 chars).
+Keywords should reflect what a mom would actually type when searching.</div>
+      <div class="pactions">
+        <button class="btn-copy" onclick="copyPrompt('p-m3-pinterest',this)">Copy filled prompt</button>
+        <button class="btn-sec" onclick="runAndShow('p-m3-pinterest','out-m3-pinterest','out-m3-pinterest-content','Writing your Pinterest descriptions...')">Generate with AI</button>
+      </div>
+    </div>
+    <div class="ai-out" id="out-m3-pinterest"><h4>✦ Your Pinterest Pin Descriptions</h4><div class="ai-content" id="out-m3-pinterest-content"></div></div>
+  </div>
+  <div class="mod-footer">
+    <button class="btn-prev" onclick="goToMod(2)">← Content</button>
+    <div class="prog-track"><div class="prog-fill" style="width:39%"></div></div>
+    <button class="btn-next" onclick="goToMod(4)">Module 4: Engagement →</button>
+  </div>
+</div>
+<div class="mod-panel" id="panel-4">
+  <div class="card">
+    <div class="card-hdr">
+      <div class="mod-badge">04</div>
+      <div>
+        <h2>Engagement System</h2>
+        <p>Followers are leads. The comment section is your sales floor.</p>
+      </div>
+    </div>
+    <div class="slabel">The mom buyer journey</div>
+    <div class="journey">
+      <div class="jstep"><span class="jnum">1</span><span class="jtitle">Cold</span><span class="jsub">She finds you via a reel or pin. Make her feel so seen she follows.</span></div>
+      <div class="jstep"><span class="jnum">2</span><span class="jtitle">Warm</span><span class="jsub">She trusts you a little. Give value that makes her want more.</span></div>
+      <div class="jstep"><span class="jnum">3</span><span class="jtitle">Hot</span><span class="jsub">She's commented or DM'd. Make buying the obvious next step.</span></div>
+      <div class="jstep"><span class="jnum">4</span><span class="jtitle">Buyer</span><span class="jsub">She purchased. Delight her so she tells other moms.</span></div>
+    </div>
+    <div class="slabel">Comment response matrix</div>
+    <div class="prompt-block">
+      <div class="plabel">10 comment scenarios — ready to copy and adapt</div>
+      <div class="ptext" id="p-m4-comments">You are a community manager for a mom-owned digital product business.
+Brand: [BUSINESS] | Product: [PRODUCT] | Brand Context: [VOICE_OS]
+
+Write comment responses for these 10 scenarios:
+1. 'How much is this?' → bridge to DM without being pushy
+2. 'I wish I could afford this' → empathy + reframe (no guilt tripping)
+3. Generic '❤️ Love this!' → deepen the relationship, not just thanks
+4. 'Does this actually work?' → social proof, conversational not salesy
+5. Friend tag → welcome the friend, reward the tagger
+6. Negative comment → de-escalate publicly, invite to DM
+7. 'I've tried everything and nothing works' → empathy + genuine curiosity
+8. 'Where do I even start?' → quick win + clear next step
+9. Another mom sharing a struggle in your niche → lead with heart
+10. 'Are you a real person or is this AI?' → charming + honest
+
+Each: under 3 sentences. Human. Never copy-paste feeling.</div>
+      <div class="pactions">
+        <button class="btn-copy" onclick="copyPrompt('p-m4-comments',this)">Copy filled prompt</button>
+        <button class="btn-sec" onclick="runAndShow('p-m4-comments','out-m4-comments','out-m4-comments-content','Writing your comment responses...')">Generate with AI</button>
+      </div>
+    </div>
+    <div class="ai-out" id="out-m4-comments"><h4>✦ Your Comment Response Matrix</h4><div class="ai-content" id="out-m4-comments-content"></div></div>
+    <div class="slabel">DM sales script</div>
+    <div class="igrid">
+      <div class="igrp fw"><label>Her top 3 objections to buying</label><input id="m4-objections" type="text" placeholder="e.g. 'I don't have time', 'will this work for me', 'I've tried things before'"/></div>
+      <div class="igrp"><label>Price range</label><input id="m4-price" type="text" placeholder="e.g. $47"/></div>
+    </div>
+    <div class="prompt-block">
+      <div class="plabel">Complete DM conversation — warm lead to sale</div>
+      <div class="ptext" id="p-m4-dms">You are a social selling specialist for a mom entrepreneur.
+Product: [PRODUCT] | Price: [PRICE] | Ideal buyer: [AUDIENCE]
+Her top 3 objections: [OBJECTIONS]
+Brand Context: [VOICE_OS]
+
+Write a complete DM conversation for a mom who commented asking about my product.
+Include:
+· Opening message — curious and warm, not a sales pitch
+· 3 questions to understand where she's at (not an interrogation)
+· Natural bridge from conversation to 'here's how I can help'
+· Objection responses for her top 3 (empathetic, not defensive)
+· Close with a clear next step (link, call, checkout)
+· Follow-up message if she goes quiet after 48 hours
+
+Write actual messages — not instructions. Max 4 sentences each.
+Never sound like a used car salesperson. She will ghost you immediately.</div>
+      <div class="pactions">
+        <button class="btn-copy" onclick="copyPrompt('p-m4-dms',this)">Copy filled prompt</button>
+        <button class="btn-sec" onclick="runAndShow('p-m4-dms','out-m4-dms','out-m4-dms-content','Writing your DM script...')">Generate with AI</button>
+      </div>
+    </div>
+    <div class="ai-out" id="out-m4-dms"><h4>✦ Your DM Sales Script</h4><div class="ai-content" id="out-m4-dms-content"></div></div>
+  </div>
+  <div class="mod-footer">
+    <button class="btn-prev" onclick="goToMod(3)">← Platforms</button>
+    <div class="prog-track"><div class="prog-fill" style="width:52%"></div></div>
+    <button class="btn-next" onclick="goToMod(5)">Module 5: Analytics →</button>
+  </div>
+</div>
+<div class="mod-panel" id="panel-5">
+  <div class="card">
+    <div class="card-hdr">
+      <div class="mod-badge">05</div>
+      <div>
+        <h2>Analytics Engine</h2>
+        <p>Stop posting into the void. 30 minutes a month. That's all this takes.</p>
+      </div>
+    </div>
+    <div class="info-box"><strong>You don't need to become a data analyst.</strong> Paste your numbers into AI and get a plain-English strategy adjustment. Done.</div>
+    <div class="slabel">Monthly performance audit</div>
+    <div class="igrid">
+      <div class="igrp"><label>Platform</label>
+        <select id="m5-platform"><option>Instagram</option><option>TikTok</option><option>Pinterest</option></select>
+      </div>
+      <div class="igrp fw"><label>Your last 30 days data — paste your actual numbers here</label><textarea id="m5-data" placeholder="e.g. Reach: 12,400 | Impressions: 28k | Engagement rate: 4.2% | Follower growth: +87 | Top post: AI side hustle reel (2.1k views, 43 saves) | Bottom post: talking head about planning (380 views)..."></textarea></div>
+    </div>
+    <div class="prompt-block">
+      <div class="plabel">Monthly audit — what to do more of next month</div>
+      <div class="ptext" id="p-m5-audit">You are a social media analytics consultant who works with mom-owned businesses.
+Platform: [PLATFORM]
+Brand Context: [VOICE_OS]
+My last 30 days data: [DATA]
+
+Tell me:
+1. What content is outperforming — and the likely reason why
+2. What's underperforming — and what's probably causing it
+3. What my top posts have in common (pattern recognition)
+4. What I should do MORE of next month (specific formats/topics)
+5. What I should stop wasting time on
+6. One experiment to run next month (specific and testable)
+7. One content gap I'm probably missing based on this data
+
+Be direct. I have 2 kids and 30 minutes. Don't be vague.</div>
+      <div class="pactions">
+        <button class="btn-copy" onclick="copyPrompt('p-m5-audit',this)">Copy filled prompt</button>
+        <button class="btn-sec" onclick="runAndShow('p-m5-audit','out-m5-audit','out-m5-audit-content','Analysing your performance data...')">Generate with AI</button>
+      </div>
+    </div>
+    <div class="ai-out" id="out-m5-audit"><h4>✦ Your Monthly Audit</h4><div class="ai-content" id="out-m5-audit-content"></div></div>
+    <div class="slabel">Competitor gap finder</div>
+    <div class="igrid">
+      <div class="igrp fw"><label>Your top 3 competitors (Instagram handles or names)</label><input id="m5-comps" type="text" placeholder="e.g. @digitalproductmom, @aiforwomen, @thedigitalmomlife"/></div>
+      <div class="igrp fw"><label>What you're currently known for</label><input id="m5-known" type="text" placeholder="e.g. AI tools for moms, no-fluff digital product advice"/></div>
+    </div>
+    <div class="prompt-block">
+      <div class="plabel">Competitor gap analysis — find the space nobody else is filling</div>
+      <div class="ptext" id="p-m5-gaps">You are a competitive intelligence analyst for mom-owned digital product businesses.
+My niche: [NICHE] | My top 3 competitors: [COMPETITORS]
+What I'm currently known for: [KNOWN]
+Brand Context: [VOICE_OS]
+
+Find me:
+1. Topics my competitors cover that I'm ignoring (should I be there?)
+2. Topics NOBODY in my niche covers well (opportunity alert)
+3. The audience segment everyone is competing for vs. the ones being ignored
+4. Content formats my competitors under-use where I could dominate
+5. 5 content ideas that position me differently without naming competitors
+
+Frame this as: 'here are the gaps, here's which ones are worth going after.'</div>
+      <div class="pactions">
+        <button class="btn-copy" onclick="copyPrompt('p-m5-gaps',this)">Copy filled prompt</button>
+        <button class="btn-sec" onclick="runAndShow('p-m5-gaps','out-m5-gaps','out-m5-gaps-content','Finding your competitive gaps...')">Generate with AI</button>
+      </div>
+    </div>
+    <div class="ai-out" id="out-m5-gaps"><h4>✦ Your Competitor Gap Analysis</h4><div class="ai-content" id="out-m5-gaps-content"></div></div>
+  </div>
+  <div class="mod-footer">
+    <button class="btn-prev" onclick="goToMod(4)">← Engagement</button>
+    <div class="prog-track"><div class="prog-fill" style="width:65%"></div></div>
+    <button class="btn-next" onclick="goToMod(6)">Module 6: Monetize →</button>
+  </div>
+</div>
+<div class="mod-panel" id="panel-6">
+  <div class="card">
+    <div class="card-hdr">
+      <div class="mod-badge">06</div>
+      <div>
+        <h2>Monetization Stack</h2>
+        <p>Build it once. Sell it forever. AI helps you do both faster.</p>
+      </div>
+    </div>
+    <div class="slabel">The digital product revenue stack</div>
+    <div class="stack-grid">
+      <div class="stack-item"><div class="stack-num">01</div><div class="stack-title">Digital templates</div><div class="stack-sub">Canva templates, planners, swipe files — AI writes the listings</div></div>
+      <div class="stack-item"><div class="stack-num">02</div><div class="stack-title">Mini-courses / workshops</div><div class="stack-sub">AI builds curriculum, writes slide copy, creates promo content</div></div>
+      <div class="stack-item"><div class="stack-num">03</div><div class="stack-title">Ebooks / guides</div><div class="stack-sub">AI outlines, writes chapters, creates launch posts</div></div>
+      <div class="stack-item"><div class="stack-num">04</div><div class="stack-title">Memberships</div><div class="stack-sub">AI plans content calendar, writes welcome sequences</div></div>
+      <div class="stack-item"><div class="stack-num">05</div><div class="stack-title">Bundles & vaults</div><div class="stack-sub">AI writes bundle descriptions, creates urgency-based copy</div></div>
+    </div>
+    <div class="slabel">Digital product builder</div>
+    <div class="igrid">
+      <div class="igrp fw"><label>Your expertise (from experience, not just research)</label><input id="m6-expertise" type="text" placeholder="e.g. using AI to batch content and sell digital products as a mom"/></div>
+      <div class="igrp fw"><label>Your audience's #1 solvable problem (specific)</label><input id="m6-problem" type="text" placeholder="e.g. they have ideas but don't know how to turn them into products that sell"/></div>
+      <div class="igrp"><label>Product format</label>
+        <select id="m6-format"><option>PDF guide / playbook</option><option>Template pack</option><option>Mini-course</option><option>Prompt pack</option><option>Planner / journal</option><option>Swipe file</option><option>Membership</option><option>Bundle</option></select>
+      </div>
+      <div class="igrp"><label>Price target</label>
+        <select id="m6-price"><option>$7</option><option>$17</option><option>$27</option><option>$47</option><option>$97</option><option>$197</option></select>
+      </div>
+    </div>
+    <div class="prompt-block">
+      <div class="plabel">Digital product builder — full product design</div>
+      <div class="ptext" id="p-m6-product">You are a digital product strategist for mom-owned online businesses.
+My expertise: [EXPERTISE]
+My audience's #1 solvable problem: [PROBLEM]
+Format: [FORMAT] | Price target: [PRICE]
+Brand Context: [VOICE_OS]
+
+Design my product:
+1. Product name — 3 options (outcome-focused, not clever-for-the-sake-of-it)
+2. Subtitle that sells the transformation in one line
+3. Full outline (sections + 3-5 components each)
+4. The quick win — what does she experience in the first 5 minutes?
+5. 3 bonuses that make it feel like a no-brainer
+6. One-paragraph sales description for my bio link
+7. 5 social posts to launch this product (mix of formats)</div>
+      <div class="pactions">
+        <button class="btn-copy" onclick="copyPrompt('p-m6-product',this)">Copy filled prompt</button>
+        <button class="btn-sec" onclick="runAndShow('p-m6-product','out-m6-product','out-m6-product-content','Designing your digital product...')">Generate with AI</button>
+      </div>
+    </div>
+    <div class="ai-out" id="out-m6-product"><h4>✦ Your Product Design</h4><div class="ai-content" id="out-m6-product-content"></div></div>
+    <div class="slabel">Launch campaign blueprint</div>
+    <div class="igrid">
+      <div class="igrp"><label>Launch window (days)</label><input id="m6-window" type="text" placeholder="e.g. 7 days"/></div>
+      <div class="igrp"><label>Revenue goal</label><input id="m6-goal" type="text" placeholder="e.g. $500"/></div>
+      <div class="igrp"><label>Approx audience size</label><input id="m6-audience-size" type="text" placeholder="e.g. 800 followers"/></div>
+    </div>
+    <div class="prompt-block">
+      <div class="plabel">Full 7-day launch campaign — pre-launch to close</div>
+      <div class="ptext" id="p-m6-launch">You are a launch strategist for a mom selling digital products.
+Product: [PRODUCT] | Price: [PRICE] | Launch window: [WINDOW]
+Platform: [PLATFORM] | Audience size: [AUDIENCE_SIZE] | Revenue goal: [GOAL]
+Brand Context: [VOICE_OS]
+
+Build my complete launch campaign:
+PRE-LAUNCH (7 days): daily content to build anticipation without overhyping
+ → Each day: topic, format, hook, message, CTA
+LAUNCH DAY: announcement post + Stories sequence (5 slides minimum)
+DAY 3: 'still on the fence?' nurture post — address her real objections
+DAY 5: social proof post — testimonials, results, or your own transformation
+DAY 6: 'last 24 hours' urgency — real reason, not manufactured scarcity
+DAY 7: 'closing tonight' final push — warm, not desperate
+POST-LAUNCH: thank-you post for buyers + seeds for your next launch
+
+For each post: hook, core message, CTA. Keep it human.</div>
+      <div class="pactions">
+        <button class="btn-copy" onclick="copyPrompt('p-m6-launch',this)">Copy filled prompt</button>
+        <button class="btn-sec" onclick="runAndShow('p-m6-launch','out-m6-launch','out-m6-launch-content','Building your launch campaign...')">Generate with AI</button>
+      </div>
+    </div>
+    <div class="ai-out" id="out-m6-launch"><h4>✦ Your Launch Campaign</h4><div class="ai-content" id="out-m6-launch-content"></div></div>
+  </div>
+  <div class="mod-footer">
+    <button class="btn-prev" onclick="goToMod(5)">← Analytics</button>
+    <div class="prog-track"><div class="prog-fill" style="width:78%"></div></div>
+    <button class="btn-next" onclick="goToMod(7)">Module 7: Weekly Gen →</button>
+  </div>
+</div>
+<div class="mod-panel" id="panel-7">
+  <div class="card">
+    <div class="card-hdr">
+      <div class="mod-badge">07</div>
+      <div>
+        <h2>Weekly Content Generator</h2>
+        <p>Run every Monday. 30 minutes. Feeds the whole week.</p>
+      </div>
+    </div>
+    <div class="slabel">Your weekly schedule</div>
+    <div class="week-sched">
+      <div class="wday"><div class="wday-name">Mon</div><div class="wday-time">30 min</div><div class="wday-desc">Run planning prompt. Generate all content for the week.</div></div>
+      <div class="wday"><div class="wday-name">Tue</div><div class="wday-time">15 min</div><div class="wday-desc">Write Tue/Wed posts using AI output.</div></div>
+      <div class="wday"><div class="wday-name">Wed</div><div class="wday-time">15 min</div><div class="wday-desc">Schedule content. Respond to DMs and comments.</div></div>
+      <div class="wday"><div class="wday-name">Thu</div><div class="wday-time">15 min</div><div class="wday-desc">Write Fri post. Pull mid-week numbers.</div></div>
+      <div class="wday"><div class="wday-name">Fri</div><div class="wday-time">15 min</div><div class="wday-desc">Monthly audit (week 4 only). Plan weekend Stories.</div></div>
+    </div>
+    <div class="slabel">Monday planning prompt — generate your whole week now</div>
+    <div class="igrid">
+      <div class="igrp fw"><label>Last week's best post — what was it and why did it work?</label><input id="m7-best" type="text" placeholder="e.g. my 'I made $300 at 11pm' reel — got 2k views, 40 saves, resonated with the exhausted mom angle"/></div>
+      <div class="igrp fw"><label>This month's main goal</label>
+        <select id="m7-goal">
+          <option>Product sales</option>
+          <option>Follower growth</option>
+          <option>Email list growth</option>
+          <option>Engagement / trust building</option>
+          <option>Launch preparation</option>
+        </select>
+      </div>
+      <div class="igrp fw"><label>Any real-life stuff happening this week worth tying content to?</label><input id="m7-life" type="text" placeholder="e.g. school holidays, rainy week stuck at home, just hit 1k followers"/></div>
+      <div class="igrp fw"><label>Trending topics or things you've noticed in your niche this week</label><input id="m7-trends" type="text" placeholder="e.g. lots of moms talking about the new ChatGPT update, AI fatigue content performing well"/></div>
+    </div>
+    <button class="btn-gen" id="weekly-btn" onclick="generateWeeklyPlan()">✦ Generate my full week of content</button>
+    <div class="ai-out" id="out-weekly" style="margin-top:16px;">
+      <h4>✦ Your Week of Content</h4>
+      <div class="ai-content" id="out-weekly-content"></div>
+    </div>
+    <div class="slabel" style="margin-top:28px;">Voice restoration prompt — make any AI draft sound like you</div>
+    <div class="igrid">
+      <div class="igrp fw"><label>AI draft to humanise — paste it here</label><textarea id="m7-draft" placeholder="Paste any AI-generated caption, script, or post here..."></textarea></div>
+      <div class="igrp fw"><label>Personal detail to weave in (real story, opinion, or specific moment)</label><input id="m7-detail" type="text" placeholder="e.g. I wrote this while my toddler used my leg as a climbing frame"/></div>
+    </div>
+    <div class="prompt-block">
+      <div class="plabel">Voice restoration — sounds like you typed it at 10pm</div>
+      <div class="ptext" id="p-m7-voice">Rewrite this AI draft to sound like the real me.
+My voice: [PERSONALITY]
+Personal detail to weave in: [DETAIL]
+Brand Context: [VOICE_OS]
+AI draft: [DRAFT]
+
+Rewrite it so it:
+· Sounds like I actually typed it at 10pm one-handed
+· Includes the personal detail without being forced
+· Is 20% shorter than the original
+· Has at least one moment that feels real, not 'content-y'
+· Would make my audience think 'lol same' or 'she gets it'</div>
+      <div class="pactions">
+        <button class="btn-copy" onclick="copyPrompt('p-m7-voice',this)">Copy filled prompt</button>
+        <button class="btn-sec" onclick="runAndShow('p-m7-voice','out-m7-voice','out-m7-voice-content','Restoring your voice...')">Generate with AI</button>
+      </div>
+    </div>
+    <div class="ai-out" id="out-m7-voice"><h4>✦ Your Humanised Draft</h4><div class="ai-content" id="out-m7-voice-content"></div></div>
+  </div>
+  <div class="mod-footer">
+    <button class="btn-prev" onclick="goToMod(6)">← Monetize</button>
+    <div class="prog-track"><div class="prog-fill" style="width:87.5%"></div></div>
+    <button class="btn-next" onclick="goToMod(8)">Module 8: Calendar →</button>
+  </div>
+</div>
+
+<div class="mod-panel" id="panel-8">
+  <div class="card">
+    <div class="card-hdr">
+      <div class="mod-badge">08</div>
+      <div>
+        <h2>Content Calendar Generator</h2>
+        <p>Pick your platforms, set your goal, get 30 days mapped out in one shot.</p>
+      </div>
+    </div>
+    <div class="info-box"><strong>This is the Module 02 calendar batch, upgraded.</strong> Choose exactly which platforms you're actually posting on, and this builds a full 30-day plan around your real goal, roughly 60% educational/trust content and 40% conversion, the same split that runs through the rest of the system.</div>
+
+    <div class="slabel">Which platforms do you want content for?</div>
+    <ul class="checklist" id="cal-platform-list">
+      <li onclick="toggleCalPlatform(this,'Instagram')"><div class="cbox"><svg class="ck" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>Instagram</li>
+      <li onclick="toggleCalPlatform(this,'TikTok / Reels')"><div class="cbox"><svg class="ck" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>TikTok / Reels</li>
+      <li onclick="toggleCalPlatform(this,'Pinterest')"><div class="cbox"><svg class="ck" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>Pinterest</li>
+      <li onclick="toggleCalPlatform(this,'Twitter / X')"><div class="cbox"><svg class="ck" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>Twitter / X</li>
+      <li onclick="toggleCalPlatform(this,'Email')"><div class="cbox"><svg class="ck" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>Email</li>
+    </ul>
+
+    <div class="slabel">Your goal and context</div>
+    <div class="igrid">
+      <div class="igrp"><label>This month's main goal</label>
+        <select id="cal-goal">
+          <option>Product sales</option>
+          <option>Follower growth</option>
+          <option>Email list growth</option>
+          <option>Engagement / trust building</option>
+          <option>Launch preparation</option>
+        </select>
+      </div>
+      <div class="igrp"><label>Posting cadence per platform</label>
+        <select id="cal-cadence">
+          <option>3x per week (light)</option>
+          <option>5x per week (steady)</option>
+          <option>Daily (heavy)</option>
+        </select>
+      </div>
+      <div class="igrp fw"><label>Anything happening this month worth tying content to? (launches, seasons, real life)</label><input id="cal-context" type="text" placeholder="e.g. launching a new bundle mid-month, back-to-school chaos, hit 2k followers"/></div>
+    </div>
+    <button class="btn-gen" id="calendar-btn" onclick="generateCalendar()">✦ Generate my 30-day calendar</button>
+
+    <div class="prompt-block" style="margin-top:16px;">
+      <div class="plabel">Calendar prompt — copy this version instead if you'd rather run it yourself</div>
+      <div class="ptext" id="p-m8-calendar">You are a content strategist for a mom-owned digital product business.
+Brand Context: [VOICE_OS]
+Platforms: [CAL_PLATFORMS]
+This month's main goal: [CAL_GOAL]
+Posting cadence: [CAL_CADENCE]
+Product I'm promoting: [PRODUCT]
+Anything happening this month worth tying content to: [CAL_CONTEXT]
+
+Create a 30-day content calendar across only the platforms listed above. For each post:
+· Day + platform + format (Reel / carousel / static / Story / pin / email / tweet)
+· Content angle (specific — not 'motivational post')
+· Hook (written out in full)
+· Whether it's educational, trust-building, or conversion content
+· CTA
+
+Balance: roughly 60% educational/trust, 40% conversion. Every piece should serve the goal above. Group the output by week (Week 1-4) so it's easy to scan.</div>
+      <div class="pactions">
+        <button class="btn-copy" onclick="copyCalendarPrompt(this)">Copy filled prompt</button>
+      </div>
+    </div>
+
+    <div class="ai-out" id="out-calendar" style="margin-top:16px;">
+      <h4>✦ Your 30-Day Calendar</h4>
+      <div class="ai-content" id="out-calendar-content"></div>
+    </div>
+  </div>
+
+  <div class="done-banner">
+    <h3>System installed. ✦</h3>
+    <p>You don't need more hours in the day. You need a smarter engine. This is it — run it on repeat.</p>
+    <a href="https://jadejanosi.com/offers/" class="btn-done">Explore more tools →</a>
+  </div>
+
+  <div class="mod-footer">
+    <button class="btn-prev" onclick="goToMod(7)">← Weekly Gen</button>
+    <div class="prog-track"><div class="prog-fill" style="width:100%"></div></div>
+    <button class="btn-next" onclick="goToMod(0)">Start over</button>
+  </div>
+</div>
+
+</main>
+<footer class="site-footer">
+  <p>A tool by <a href="https://jadejanosi.com">Jade Janosi</a> · Part of <a href="https://jadejanosi.com/product/moms-ai-revenue-system/">Mom's AI Revenue System</a></p>
+</footer>
+<div class="toast" id="toast">Copied!</div>
+<script>
+let voiceOS = '';
+function getVals() {
+  return {
+    BUSINESS: (document.getElementById('v-biz')||{}).value||'',
+    AUDIENCE: (document.getElementById('v-audience')||{}).value||'your audience',
+    PERSONALITY: (document.getElementById('v-personality')||{}).value||'warm, direct, real',
+    INSPO: (document.getElementById('v-inspo')||{}).value||'',
+    WORDS: (document.getElementById('v-words')||{}).value||'',
+    CRINGE: (document.getElementById('v-cringe')||{}).value||'',
+    PRODUCT: (document.getElementById('v-product')||{}).value||'digital product for moms',
+    NICHE: (document.getElementById('v-niche')||{}).value||'digital products for moms',
+    VOICE_OS: voiceOS || '[Complete Setup tab first to auto-fill your Brand Voice OS]',
+    SOURCE: (document.getElementById('m2-source')||{}).value||'',
+    PAIN: (document.getElementById('m2-pain')||{}).value||'',
+    DESIRE: (document.getElementById('m2-desire')||{}).value||'',
+    TOPIC: (document.getElementById('m3-topic')||{}).value||'',
+    OFFER: (document.getElementById('m3-offer')||{}).value||'',
+    LENGTH: ((document.getElementById('m3-length')||{}).value)||'60 seconds',
+    PIN_IMAGE: (document.getElementById('m3-pin-image')||{}).value||'',
+    OBJECTIONS: (document.getElementById('m4-objections')||{}).value||'',
+    PRICE: (document.getElementById('m4-price')||{}).value||'$47',
+    PLATFORM: ((document.getElementById('m5-platform')||{}).value)||'Instagram',
+    DATA: (document.getElementById('m5-data')||{}).value||'',
+    COMPETITORS: (document.getElementById('m5-comps')||{}).value||'',
+    KNOWN: (document.getElementById('m5-known')||{}).value||'',
+    EXPERTISE: (document.getElementById('m6-expertise')||{}).value||'',
+    PROBLEM: (document.getElementById('m6-problem')||{}).value||'',
+    FORMAT: ((document.getElementById('m6-format')||{}).value)||'PDF guide',
+    LAUNCH_PRICE: ((document.getElementById('m6-price')||{}).value)||'$47',
+    WINDOW: (document.getElementById('m6-window')||{}).value||'7 days',
+    GOAL: ((document.getElementById('m6-goal')||{}).value)||'Product sales',
+    AUDIENCE_SIZE: (document.getElementById('m6-audience-size')||{}).value||'',
+    BEST: (document.getElementById('m7-best')||{}).value||'',
+    WEEKLY_GOAL: ((document.getElementById('m7-goal')||{}).value)||'Product sales',
+    LIFE: (document.getElementById('m7-life')||{}).value||'',
+    TRENDS: (document.getElementById('m7-trends')||{}).value||'',
+    DRAFT: (document.getElementById('m7-draft')||{}).value||'',
+    DETAIL: (document.getElementById('m7-detail')||{}).value||'',
+    M1_NICHE: (document.getElementById('m1-niche')||{}).value||'',
+    M5_COMPS: (document.getElementById('m5-comps')||{}).value||'',
+  };
+}
+function fillPrompt(raw) {
+  const v = getVals();
+  return raw
+    .replace(/\[VOICE_OS\]/g, v.VOICE_OS)
+    .replace(/\[BUSINESS\]/g, v.BUSINESS)
+    .replace(/\[AUDIENCE\]/g, v.AUDIENCE)
+    .replace(/\[PERSONALITY\]/g, v.PERSONALITY)
+    .replace(/\[PRODUCT\]/g, v.PRODUCT)
+    .replace(/\[NICHE\]/g, v.NICHE || v.M1_NICHE)
+    .replace(/\[SOURCE\]/g, v.SOURCE)
+    .replace(/\[PAIN\]/g, v.PAIN)
+    .replace(/\[DESIRE\]/g, v.DESIRE)
+    .replace(/\[TOPIC\]/g, v.TOPIC)
+    .replace(/\[OFFER\]/g, v.OFFER)
+    .replace(/\[LENGTH\]/g, v.LENGTH)
+    .replace(/\[PIN_IMAGE\]/g, v.PIN_IMAGE)
+    .replace(/\[OBJECTIONS\]/g, v.OBJECTIONS)
+    .replace(/\[PRICE\]/g, v.PRICE || v.LAUNCH_PRICE)
+    .replace(/\[PLATFORM\]/g, v.PLATFORM)
+    .replace(/\[DATA\]/g, v.DATA)
+    .replace(/\[COMPETITORS\]/g, v.COMPETITORS)
+    .replace(/\[KNOWN\]/g, v.KNOWN)
+    .replace(/\[EXPERTISE\]/g, v.EXPERTISE)
+    .replace(/\[PROBLEM\]/g, v.PROBLEM)
+    .replace(/\[FORMAT\]/g, v.FORMAT)
+    .replace(/\[WINDOW\]/g, v.WINDOW)
+    .replace(/\[GOAL\]/g, v.GOAL || v.WEEKLY_GOAL)
+    .replace(/\[AUDIENCE_SIZE\]/g, v.AUDIENCE_SIZE)
+    .replace(/\[DRAFT\]/g, v.DRAFT)
+    .replace(/\[DETAIL\]/g, v.DETAIL);
+}
+function copyPrompt(id, btn) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const text = fillPrompt(el.textContent);
+  navigator.clipboard.writeText(text).then(() => {
+    showToast('Prompt copied!');
+    const orig = btn.textContent;
+    btn.textContent = 'Copied ✓';
+    setTimeout(() => { btn.textContent = orig; }, 2000);
+  }).catch(() => {
+    const ta = document.createElement('textarea');
+    ta.value = text; document.body.appendChild(ta); ta.select();
+    document.execCommand('copy'); document.body.removeChild(ta);
+    showToast('Prompt copied!');
+  });
+}
+function copyVoiceOS() {
+  navigator.clipboard.writeText(voiceOS).then(() => showToast('Brand Voice OS copied!')).catch(()=>{});
+}
+function saveVoiceOS() {
+  sessionStorage.setItem('voiceOS', voiceOS);
+  showToast('Saved to session!');
+}
+async function callAI(prompt, loadingMsg) {
+  const response = await fetch('/api/generate', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 2000,
+      messages: [{ role: 'user', content: prompt }]
+    })
+  });
+  const data = await response.json();
+  if (data.content && data.content[0]) return data.content[0].text;
+  throw new Error('No response');
+}
+async function generateVoiceOS() {
+  const v = getVals();
+  const btn = document.getElementById('voice-btn');
+  const box = document.getElementById('voice-os-box');
+  const content = document.getElementById('voice-os-content');
+  box.style.display = 'block';
+  btn.disabled = true; btn.textContent = 'Generating...';
+  content.innerHTML = '<div class="ai-loading"><div class="spinner"></div> Building your Brand Voice OS...</div>';
+  const prompt = `You are a brand strategist for an online business owned by a mom.
+Based on the info below, create a Brand Voice OS I'll paste into every future prompt.
+
+My business: ${v.BUSINESS}
+My audience: ${v.AUDIENCE}
+My personality: ${v.PERSONALITY}
+Brands/creators whose tone I love: ${v.INSPO}
+Words that feel like me: ${v.WORDS}
+Words that make me cringe: ${v.CRINGE}
+My main product: ${v.PRODUCT}
+
+Output:
+· Brand Voice Summary (2 sentences — this IS my brand in a nutshell)
+· Tone Adjectives (5 words)
+· Writing Do's (5 bullet points)
+· Writing Don'ts (5 bullet points — be ruthless)
+· Sample caption showing the voice in action
+
+Format it so I can copy and paste the whole thing as 'Brand Context' at the start of every future prompt.`;
   try {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01'
-      },
-      body: JSON.stringify(req.body)
-    });
-    const data = await response.json();
-    return res.status(response.status).json(data);
-  } catch (error) {
-    return res.status(500).json({ error: 'Request failed' });
+    const text = await callAI(prompt);
+    voiceOS = text;
+    sessionStorage.setItem('voiceOS', text);
+    content.textContent = text;
+    document.getElementById('setup-banner').style.display = 'none';
+    showToast('Brand Voice OS generated!');
+  } catch(e) {
+    content.textContent = 'Could not connect. Please try again.';
+  }
+  btn.disabled = false; btn.textContent = '✦ Generate my Brand Voice OS';
+}
+async function runAndShow(promptId, outId, contentId, loadingMsg) {
+  const promptEl = document.getElementById(promptId);
+  const outEl = document.getElementById(outId);
+  const contentEl = document.getElementById(contentId);
+  if (!promptEl || !outEl || !contentEl) return;
+  const filledPrompt = fillPrompt(promptEl.textContent);
+  outEl.style.display = 'block';
+  contentEl.innerHTML = '<div class="ai-loading"><div class="spinner"></div> ' + loadingMsg + '</div>';
+  try {
+    const text = await callAI(filledPrompt);
+    contentEl.textContent = text;
+  } catch(e) {
+    contentEl.textContent = 'Could not connect. Please try again.';
   }
 }
+async function generateWeeklyPlan() {
+  const v = getVals();
+  const btn = document.getElementById('weekly-btn');
+  const outEl = document.getElementById('out-weekly');
+  const contentEl = document.getElementById('out-weekly-content');
+  btn.disabled = true; btn.textContent = 'Generating your week...';
+  outEl.style.display = 'block';
+  contentEl.innerHTML = '<div class="ai-loading"><div class="spinner"></div> Planning your full week of content...</div>';
+  const prompt = `It's Monday. Help me plan this week's content. I have about 30 minutes.
+Brand Context: ${v.VOICE_OS}
+Last week's best post: ${v.BEST}
+This month's main goal: ${v.WEEKLY_GOAL}
+Any real-life stuff happening this week: ${v.LIFE}
+Trending topics in my niche I've noticed: ${v.TRENDS}
+My product: ${v.PRODUCT}
+My niche: ${v.NICHE}
+
+Give me a Mon-Fri content plan. For each day:
+· Platform + format
+· Specific angle (not generic — 'mindset tips' is not a plan)
+· Scroll-stopping hook written out in full
+· Core message in one sentence
+· CTA
+
+Monday = reach (educational or entertaining — make it shareable)
+Tuesday = value (teach something specific and useful)
+Wednesday = trust (personal story or behind-the-scenes)
+Thursday = engagement (question, poll, or relatable moment)
+Friday = conversion (promote the product or get them to the link)
+
+For each post write the actual hook and a 2-3 sentence caption draft. Make it sound like me.`;
+  try {
+    const text = await callAI(prompt);
+    contentEl.textContent = text;
+  } catch(e) {
+    contentEl.textContent = 'Could not connect. Please try again.';
+  }
+  btn.disabled = false; btn.textContent = '✦ Generate my full week of content';
+}
+function goToMod(n) {
+  for (let i = 0; i < 9; i++) {
+    const p = document.getElementById('panel-' + i);
+    const t = document.getElementById('tab-' + i);
+    if (p) p.classList.toggle('active', i === n);
+    if (t) {
+      t.classList.remove('active', 'done');
+      if (i === n) t.classList.add('active');
+      else if (i < n) t.classList.add('done');
+    }
+  }
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+function toggleCheck(li) { li.classList.toggle('checked'); }
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+window.addEventListener('load', () => {
+  const saved = sessionStorage.getItem('voiceOS');
+  if (saved) {
+    voiceOS = saved;
+    document.getElementById('voice-os-content').textContent = saved;
+    document.getElementById('voice-os-box').style.display = 'block';
+    document.getElementById('setup-banner').style.display = 'none';
+  }
+});
+
+let calPlatforms = [];
+
+function toggleCalPlatform(li, name) {
+  li.classList.toggle('checked');
+  if (li.classList.contains('checked')) {
+    if (!calPlatforms.includes(name)) calPlatforms.push(name);
+  } else {
+    calPlatforms = calPlatforms.filter(p => p !== name);
+  }
+}
+
+function buildCalendarPrompt() {
+  const v = getVals();
+  const platforms = calPlatforms.length ? calPlatforms.join(', ') : 'Instagram';
+  const goal = (document.getElementById('cal-goal')||{}).value || 'Product sales';
+  const cadence = (document.getElementById('cal-cadence')||{}).value || '3x per week (light)';
+  const context = (document.getElementById('cal-context')||{}).value || '';
+
+  const raw = document.getElementById('p-m8-calendar').textContent;
+  return raw
+    .replace(/\[VOICE_OS\]/g, v.VOICE_OS)
+    .replace(/\[CAL_PLATFORMS\]/g, platforms)
+    .replace(/\[CAL_GOAL\]/g, goal)
+    .replace(/\[CAL_CADENCE\]/g, cadence)
+    .replace(/\[PRODUCT\]/g, v.PRODUCT)
+    .replace(/\[CAL_CONTEXT\]/g, context);
+}
+
+function copyCalendarPrompt(btn) {
+  const text = buildCalendarPrompt();
+  navigator.clipboard.writeText(text).then(() => {
+    showToast('Prompt copied!');
+    const orig = btn.textContent;
+    btn.textContent = 'Copied ✓';
+    setTimeout(() => { btn.textContent = orig; }, 2000);
+  }).catch(() => {
+    const ta = document.createElement('textarea');
+    ta.value = text; document.body.appendChild(ta); ta.select();
+    document.execCommand('copy'); document.body.removeChild(ta);
+    showToast('Prompt copied!');
+  });
+}
+
+async function generateCalendar() {
+  if (calPlatforms.length === 0) {
+    showToast('Pick at least one platform first');
+    return;
+  }
+  const btn = document.getElementById('calendar-btn');
+  const outEl = document.getElementById('out-calendar');
+  const contentEl = document.getElementById('out-calendar-content');
+  btn.disabled = true; btn.textContent = 'Building your 30-day calendar...';
+  outEl.style.display = 'block';
+  contentEl.innerHTML = '<div class="ai-loading"><div class="spinner"></div> Planning 30 days across ' + calPlatforms.join(', ') + '...</div>';
+
+  const prompt = buildCalendarPrompt();
+  try {
+    const text = await callAI(prompt);
+    contentEl.textContent = text;
+  } catch(e) {
+    contentEl.textContent = 'Could not connect. Please try again.';
+  }
+  btn.disabled = false; btn.textContent = '✦ Generate my 30-day calendar';
+}
+
+</script>
+</body>
+</html>
