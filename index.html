@@ -954,19 +954,23 @@ function saveVoiceOS() {
   sessionStorage.setItem('voiceOS', voiceOS);
   showToast('Saved to session!');
 }
-async function callAI(prompt, loadingMsg) {
+async function callAI(prompt, maxTokens) {
   const response = await fetch('/api/generate', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      model: 'claude-sonnet-4-6',
-      max_tokens: 2000,
+      model: 'claude-sonnet-5',
+      max_tokens: maxTokens || 2000,
       messages: [{ role: 'user', content: prompt }]
     })
   });
+  if (!response.ok) {
+    const errBody = await response.text().catch(() => '');
+    throw new Error('API error (' + response.status + '): ' + errBody.slice(0, 200));
+  }
   const data = await response.json();
   if (data.content && data.content[0]) return data.content[0].text;
-  throw new Error('No response');
+  throw new Error('No response content returned.');
 }
 async function generateVoiceOS() {
   const v = getVals();
@@ -1051,16 +1055,16 @@ Friday = conversion (promote the product or get them to the link)
 Return ONLY a valid JSON array, no markdown fences, no preamble, no explanation. One object per day, in this exact shape:
 {"day": "Monday", "platform": "Instagram", "format": "Reel", "angle": "specific content angle", "hook": "the full hook written out", "message": "core message in one sentence", "cta": "the call to action"}`;
   try {
-    const text = await callAI(prompt);
+    const text = await callAI(prompt, 3000);
     weeklyData = parseAIJson(text);
     if (weeklyData) {
       contentEl.innerHTML = renderDataTable(weeklyData);
       dlEl.style.display = 'flex';
     } else {
-      contentEl.textContent = text;
+      contentEl.innerHTML = '<p style="color:#b91c1c;font-weight:700;margin-bottom:8px;">Could not read the response as a table. Raw output below, try regenerating:</p>' + escapeHtml(text).replace(/\n/g, '<br>');
     }
   } catch(e) {
-    contentEl.textContent = 'Could not connect. Please try again.';
+    contentEl.innerHTML = '<p style="color:#b91c1c;">Generation failed: ' + escapeHtml(e.message) + '</p>';
   }
   btn.disabled = false; btn.textContent = '✦ Generate my full week of content';
 }
@@ -1152,16 +1156,16 @@ async function generateCalendar() {
 
   const prompt = buildCalendarPrompt();
   try {
-    const text = await callAI(prompt);
+    const text = await callAI(prompt, 8000);
     calendarData = parseAIJson(text);
     if (calendarData) {
       contentEl.innerHTML = renderDataTable(calendarData);
       dlEl.style.display = 'flex';
     } else {
-      contentEl.textContent = text;
+      contentEl.innerHTML = '<p style="color:#b91c1c;font-weight:700;margin-bottom:8px;">Could not read the response as a calendar. Raw output below, try regenerating:</p>' + escapeHtml(text).replace(/\n/g, '<br>');
     }
   } catch(e) {
-    contentEl.textContent = 'Could not connect. Please try again.';
+    contentEl.innerHTML = '<p style="color:#b91c1c;">Generation failed: ' + escapeHtml(e.message) + '</p>';
   }
   btn.disabled = false; btn.textContent = '✦ Generate my 30-day calendar';
 }
